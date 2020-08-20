@@ -3,7 +3,15 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Vegetables
+  - Player1
+  - Player2
+  - ChoppingBoard1
+  - ChoppingBoard2
+  - Plate1
+  - Plate2
+  - TrashBox
   layers:
   - Default
   - TransparentFX
@@ -15,9 +23,9 @@ TagManager:
   - 
   - Player
   - PlayArea
-  - 
-  - 
-  - 
+  - Vegetable
+  - ChoppingBoard
+  - Plate
   - 
   - 
   - 

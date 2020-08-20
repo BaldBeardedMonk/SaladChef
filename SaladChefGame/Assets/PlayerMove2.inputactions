@@ -1,5 +1,5 @@
 {
-    "name": "PlayerMove1",
+    "name": "PlayerMove2",
     "maps": [
         {
             "name": "Player",
@@ -9,6 +9,22 @@
                     "name": "Move",
                     "type": "Value",
                     "id": "02b96d71-c1ca-4456-94f5-c4134de6d878",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "PickUp",
+                    "type": "Button",
+                    "id": "3e066468-ebb3-4427-a7c5-88aee4f1728c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "PutDown",
+                    "type": "Button",
+                    "id": "a9a57aa4-a849-4e25-be93-b386e8a2c5af",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -69,6 +85,28 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "60cd4f84-6769-4dc9-a85d-10efa7a1c857",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PickUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7494f8f2-9f44-406b-806e-ffd1240c4938",
+                    "path": "<Keyboard>/rightShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PutDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

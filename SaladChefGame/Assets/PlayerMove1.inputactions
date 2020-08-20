@@ -1,5 +1,5 @@
 {
-    "name": "PlayerMove",
+    "name": "PlayerMove1",
     "maps": [
         {
             "name": "Player",
@@ -9,6 +9,22 @@
                     "name": "Move",
                     "type": "Value",
                     "id": "02b96d71-c1ca-4456-94f5-c4134de6d878",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "PickUp",
+                    "type": "Button",
+                    "id": "76454b0b-f6d4-4374-899f-8d73c4e403ee",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "PutDown",
+                    "type": "Button",
+                    "id": "a2234bbe-5818-4dd5-abf3-4251cfe421b7",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -69,6 +85,28 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "454182b7-5480-4e42-90a7-a66e002ba38e",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PickUp",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3604bd15-bd65-4f6f-9a14-8dc2adeda647",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PutDown",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
