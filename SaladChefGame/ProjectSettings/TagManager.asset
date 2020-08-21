@@ -12,6 +12,7 @@ TagManager:
   - Plate1
   - Plate2
   - TrashBox
+  - PlayerPickUpHud
   layers:
   - Default
   - TransparentFX
@@ -26,7 +27,7 @@ TagManager:
   - Vegetable
   - ChoppingBoard
   - Plate
-  - 
+  - TrashBox
   - 
   - 
   - 

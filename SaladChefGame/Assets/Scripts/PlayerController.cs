@@ -9,23 +9,35 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public GameObject ChoppingBoard, Plate;
-    public GameObject PlayerChoppingMeter;
+    public GameObject PlayerChoppingMeter,FinalSalad;
 
     Vector2 input_movement;
-    bool pickUpAllowed = false;                                 // true when player trigger is overlapping vegetable/chopping board/plate
-    bool putDownAllowed = false;                                // true when player trigger is overlapping chopping board/plate/trash/customer
     bool isChopping = false;                                    // true when chopping is taking place
     string combination;                                         // the combination on the chopboard
     Sprite pickedVegetableSprite,putDownVegetableSprite;
-    const int maxPickUpAllowed = 2;                             // maximum vegetables player can pick up at once *IMP:if you change this please make corresponding changes to the player prefab children
-    const int maxPutDownAllowed = 6;                            // maximum vegetables that can be placed on the chopping board *IMP:if you change this please make corresponding changes to the choppingboard prefab children
+    int maxPickUpAllowed;                                       // maximum vegetables player can pick up at once
+    int maxPutDownAllowed;                                      // maximum vegetables that can be placed on the chopping board
     int pickedUpCount;                                          // values can be 0-maxPickUpAllowed for number of items the player has currently picked up.
     int putDownCount;                                           // values can be 0-maxPutDownAllowed for the number of items placed on the chopping board.
+    int putDownCase;                                            // values can be 1-4 : 1= chopping board, 2= plate, 3 = trash 4= customer
+    int pickUpCase;                                             // values can be 1-3 : 1= vegetable, 2= salad, 3 =plate
+    bool isSaladPickedUp = false;
 
     [SerializeField]
     float moveSpeed = 5f;
     float chopTime  = 5f;
 
+
+    private void Start()
+    {
+        maxPutDownAllowed = ChoppingBoard.transform.childCount;
+        for(int i=0;i<gameObject.transform.childCount;i++)
+        {
+            //since player prefab also has other children apart from pickup hud elements - in future one can just modify the prefab to allow players to pickup more vegetables at once
+            if (gameObject.transform.GetChild(i).tag == "PlayerPickUpHud") maxPickUpAllowed++;
+        }
+            
+    }
 
     private void Update()
     {
@@ -45,25 +57,81 @@ public class PlayerController : MonoBehaviour
 
     private void OnPickUp()
     {
-        
-        if(pickUpAllowed && !isChopping && pickedUpCount<maxPickUpAllowed)  
+        /* Possible pickup cases : 1 - Vegetable 2 - Salad 3 - Plate */
+        switch (pickUpCase)
         {
-            transform.GetChild(pickedUpCount).GetComponent<SpriteRenderer>().sprite = pickedVegetableSprite;
-            pickedVegetableSprite = null;
-            if(pickedUpCount<maxPickUpAllowed)  pickedUpCount++;
+            case 1:
+                CheckVegetablePickup();
+                break;
+            case 2:
+                CheckPickUpSalad();
+                break;
+            default:
+                break;
+
         }
+
     }
 
     private void OnPutDown()
     {
-        if (putDownAllowed && !isChopping && putDownCount < maxPutDownAllowed && pickedUpCount > 0)
+        /* Possible putdown cases : 1 - Chopping board 2 - Plate 3 - Trash 4- Customer */
+        switch (putDownCase)
         {
-            
+            case 1:
+                CheckChoppingBoardPutDown();
+                break;
+            case 2:
+                CheckPlatePutDown();
+                break;
+            case 3:
+                CheckTrashBoxPutDown();
+                break;
+            default:
+                break;
+
+        }
+    }
+
+    /*Function to check if vegetable can be picked up by the player and perform the necessary action */
+    void CheckVegetablePickup()
+    {
+        if(!IsPlayerPickUpFull() && !isSaladPickedUp)
+        {
+            transform.GetChild(pickedUpCount).GetComponent<SpriteRenderer>().sprite = pickedVegetableSprite;
+            pickedVegetableSprite = null;
+            pickedUpCount++;
+        }
+    }
+
+    /*Function to check if salad can be picked up by the player and perform the necessary action */
+    void CheckPickUpSalad()
+    {
+        if(IsPlayerPickUpEmpty() && !isChopping && !isSaladPickedUp)
+        {
+            isSaladPickedUp = true;
+            putDownCount = 0;
+            FinalSalad.SetActive(true);
+            for (int i = 0; i < ChoppingBoard.transform.childCount; i++)
+            {
+                FinalSalad.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = ChoppingBoard.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite;
+                ChoppingBoard.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = null;
+            }
+        }
+    }
+
+    /*Function to check if vegetable can be put down on the chopping board by the player and perform the necessary action */
+    void CheckChoppingBoardPutDown()
+    {
+        if(!IsPlayerPickUpEmpty() && !isChopping && !IsChoppingBoardFull())
+        {
+            combination += putDownVegetableSprite.name;
             ChoppingBoard.transform.GetChild(putDownCount).GetComponent<SpriteRenderer>().sprite = putDownVegetableSprite;
-            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = putDownVegetableSprite = null;
-            if(putDownCount<maxPutDownAllowed)  putDownCount++;
-            if (pickedUpCount > 0) pickedUpCount--;
-            for(int i = 0;i<pickedUpCount;i++) //rearraning the pickedup sprite on player HUD after the 1st one is kept on the chopping board.
+            putDownVegetableSprite = null;
+            putDownCount++;
+            pickedUpCount--;
+            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = null;
+            for (int i = 0; i < pickedUpCount; i++)     //rearraning the pickedup sprite on player HUD after the 1st one is kept on the chopping board.
             {
                 gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = gameObject.transform.GetChild(i + 1).GetComponent<SpriteRenderer>().sprite;
                 gameObject.transform.GetChild(i + 1).GetComponent<SpriteRenderer>().sprite = null;
@@ -72,46 +140,111 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /*Function to check if vegetable can be put down on the plate by the player and perform the necessary action */
+    void CheckPlatePutDown()
+    {
+        Debug.Log("Inside Plate PutDown");
+        if(!IsPlayerPickUpEmpty() && !IsPlateFull())
+        {
+            Plate.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = putDownVegetableSprite;
+            pickedUpCount--;
+            gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = null;
+            for (int i = 0; i < pickedUpCount; i++)     //rearraning the pickedup sprite on player HUD after the 1st one is kept on the chopping board.
+            {
+                gameObject.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = gameObject.transform.GetChild(i + 1).GetComponent<SpriteRenderer>().sprite;
+                gameObject.transform.GetChild(i + 1).GetComponent<SpriteRenderer>().sprite = null;
+            }
+        }
+    }
+
+    /*Function to check if salad can be thrown in trash by the player and perform the necessary action */
+    void CheckTrashBoxPutDown()
+    {
+        if(isSaladPickedUp)
+        {
+            combination = "";
+            isSaladPickedUp = false;
+            for (int i = 0; i < ChoppingBoard.transform.childCount; i++)
+            {
+                FinalSalad.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = null;
+            }
+            FinalSalad.SetActive(false);
+        }
+    }
+
+    /* Function that returns if plate is full or not - useful to check if vegetable can be placed on the plate */
+    bool IsPlateFull()
+    {
+        for(int i=0;i<Plate.transform.childCount;i++)
+        {
+            if (Plate.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite == null) return false;
+        }
+        return true;
+    }
+
+    /* Function that returns if chopping board is full or not - useful to check if vegetable can be placed on the chopping board */
+    bool IsChoppingBoardFull()
+    {
+        for (int i = 0; i < ChoppingBoard.transform.childCount; i++)
+        {
+            if (ChoppingBoard.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite == null) return false;
+        }
+        return true;
+    }
+
+    /* Function that returns if player pick up capacity is full or not - useful to check if vegetable can be picked up by the player */
+    bool IsPlayerPickUpFull()
+    {
+        if (pickedUpCount < maxPickUpAllowed) return false;
+        else return true;
+    }
+
+    /* Function that returns if player pick up is empty or not - useful to check if player has a vegetable before putting it down */
+    bool IsPlayerPickUpEmpty()
+    {
+        if (pickedUpCount == 0) return true;
+        else return false;
+    }
+
+
     private void OnTriggerStay2D(Collider2D other)
     {
         #region Pickup trigger stay logic
         if (other.tag=="Vegetables")
         {
-            pickUpAllowed = true;
+            pickUpCase = 1;
             pickedVegetableSprite = other.GetComponent<SpriteRenderer>().sprite;
         }
-
+        if (other.tag==ChoppingBoard.tag)
+        {
+            pickUpCase = 2;
+        }
         #endregion
 
         #region PutDown trigger stay logic
-
         if(other.tag==ChoppingBoard.tag)
         {
-         
-            putDownAllowed = true;
-            putDownVegetableSprite = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
-          
-        }
 
+            putDownCase = 1;
+            putDownVegetableSprite = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;        
+        }
+        if(other.tag==Plate.tag)
+        {
+            putDownCase = 2;
+            putDownVegetableSprite = gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite;
+        }
+        if(other.tag=="TrashBox")
+        {
+            putDownCase = 3;
+        }
         #endregion
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        #region Pickup trigger exit logic
-        if (other.tag == "Vegetables")
-        {
-            pickUpAllowed = false;
-        }
-        #endregion
-
-        #region PutDown trigger exit logic
-        if (other.tag == ChoppingBoard.tag)
-        {
-            putDownAllowed = false;
-        }
-        #endregion
-
+        pickUpCase = 0;
+        putDownCase = 0;
+       
     }
 
     IEnumerator StartChopping()

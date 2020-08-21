@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 299386020412837026}
   - component: {fileID: 299386020412837025}
   - component: {fileID: 8351656395015065088}
-  m_Layer: 0
-  m_Name: TrashCan
+  m_Layer: 13
+  m_Name: TrashBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,7 +93,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
