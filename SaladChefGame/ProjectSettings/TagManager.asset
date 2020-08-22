@@ -13,6 +13,8 @@ TagManager:
   - Plate2
   - TrashBox
   - PlayerPickUpHud
+  - CustomerSaladHud
+  - Customer
   layers:
   - Default
   - TransparentFX
@@ -28,7 +30,7 @@ TagManager:
   - ChoppingBoard
   - Plate
   - TrashBox
-  - 
+  - Customer
   - 
   - 
   - 

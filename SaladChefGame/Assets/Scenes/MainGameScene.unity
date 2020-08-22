@@ -659,6 +659,7 @@ GameObject:
   m_Component:
   - component: {fileID: 973422107}
   - component: {fileID: 973422106}
+  - component: {fileID: 973422105}
   m_Layer: 0
   m_Name: BackgroundSprite
   m_TagString: Untagged
@@ -666,6 +667,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &973422105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 973422104}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59eb520d6bc61408ba400fb3bdc3239d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BackgroundSprite: {fileID: 973422104}
+  Customer: {fileID: 0}
+  maxSaladItem: 3
+  customerOccupied: 
 --- !u!212 &973422106
 SpriteRenderer:
   m_ObjectHideFlags: 0
