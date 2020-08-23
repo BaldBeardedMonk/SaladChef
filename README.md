@@ -3,7 +3,7 @@ Programmer version of Salad Chef simulation in Unity; using Unity's new input co
 
 
 
-# Features
+## Features
 1. Local multiplayer (2 player) using Unity's new input control system. Both players can play using keyboard
 2. Easily extensible - Follow the instructions in the scripts to modify parameters such as
     * No of vegetables spawned
@@ -12,7 +12,7 @@ Programmer version of Salad Chef simulation in Unity; using Unity's new input co
     * Maximum combination the customer can order
     * Player speed, chopping time, customer wait time, scoring system
     
-# Scripts
+## Scripts
 * WelcomeScript.cs - It is the first script to be called and shows the welcome panel which gives details of the controls.
 
 * CustomerController.cs - Contains the code specific to the individual customer i.e his salad combination, his wait time, and if he is angry or not.
@@ -27,11 +27,11 @@ Programmer version of Salad Chef simulation in Unity; using Unity's new input co
 
 * SePlayArea.cs - Dynamically stretch the play area to the size of the screen. All other placements of objects and prefabs and calculated based on the play area.
 
-# Controls
+## Controls
 * Player 1 : Movement - WASD.  Pickup - Tab.   PutDown - LeftShift.
 * Player 2 : Movement - Arrow. Pickup - Enter. PutDown - RightShift.
 
-# TODO
+## TODO
 1. Implement the PowerUps - The trigger logic for PowerUp pickups will be coded in the script attached to the powerup. It will check if the player is allowed to pickup the power and then modify the required parameter(Player speed, player time or player score) based on the powerup.
 
 2. Implement HighScore : If the player score is in top 10, ask for the player name after the game is over. Store it in a local file and read from it whenever required.
