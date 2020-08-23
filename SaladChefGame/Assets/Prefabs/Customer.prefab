@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: -5469029684976725299}
   m_Layer: 14
   m_Name: Customer
-  m_TagString: Untagged
+  m_TagString: Customer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -130,7 +130,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 233fcc8a735624addbcfcf36f64975fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pc: {fileID: 0}
   maxSaladItem: 0
+  pos: 0
   VegetableSprites:
   - {fileID: -8663739424785624238, guid: c5cf77284930c480f89eb00e9a96b4d5, type: 3}
   - {fileID: 8515852673137835333, guid: c5cf77284930c480f89eb00e9a96b4d5, type: 3}
@@ -140,6 +142,7 @@ MonoBehaviour:
   - {fileID: -4224434159975881483, guid: c5cf77284930c480f89eb00e9a96b4d5, type: 3}
   CustomerTimer: {fileID: 5920354184196347038}
   timeToDeduct: 0
+  combination: []
 --- !u!1 &1194769755453179232
 GameObject:
   m_ObjectHideFlags: 0

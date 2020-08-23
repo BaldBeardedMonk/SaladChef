@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿/* Script to dynamically set the play area sprites - Stretch the background and place the borders */
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-/* Script to dynamically set the play area sprites - Stretch the background and place the borders */
 
 public class SetPlayArea : MonoBehaviour
 {

@@ -1,35 +1,46 @@
-﻿using System.Collections;
+﻿/* Script to control player movement and actions using Unity's new input system */
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-/* Script to control player movement and actions using Unity's new input system */
-
 public class PlayerController : MonoBehaviour
 {
     public GameObject ChoppingBoard, Plate;
     public GameObject PlayerChoppingMeter,FinalSalad;
+    GameObject CustomerGameObject;
+    public GameController gameController;
 
     Vector2 input_movement;
     bool isChopping = false;                                    // true when chopping is taking place
-    string combination;                                         // the combination on the chopboard
+    List<string> combination = new List<string>();              // the combination on the chopboard
+    List<string> customerCombination = new List<string>();      // the combination ordered by the particular customer
     Sprite pickedVegetableSprite,putDownVegetableSprite;
     int maxPickUpAllowed;                                       // maximum vegetables player can pick up at once
     int maxPutDownAllowed;                                      // maximum vegetables that can be placed on the chopping board
     int pickedUpCount;                                          // values can be 0-maxPickUpAllowed for number of items the player has currently picked up.
     int putDownCount;                                           // values can be 0-maxPutDownAllowed for the number of items placed on the chopping board.
     int putDownCase;                                            // values can be 1-4 : 1= chopping board, 2= plate, 3 = trash 4= customer
-    int pickUpCase;                                             // values can be 1-3 : 1= vegetable, 2= salad, 3 =plate
+    int pickUpCase;                                             // values can be 1-3 : 1= vegetable, 2= salad, 3 =plate (tentative)
     bool isSaladPickedUp = false;
+    float playerTime;
+    int playerScore;                                           
+    public Text playerTimeText, playerScoreText;
+    int playerGiveScore;
 
     [SerializeField]
-    float moveSpeed = 5f;
+    float moveSpeed;
     float chopTime  = 5f;
 
 
     private void Start()
     {
+        playerTime = gameController.gameTime;
+        playerTimeText.text = "Time:" + playerTime.ToString("F0");
+        playerGiveScore = 20;
+        StartCoroutine(Timer());
         maxPutDownAllowed = ChoppingBoard.transform.childCount;
         for(int i=0;i<gameObject.transform.childCount;i++)
         {
@@ -87,6 +98,9 @@ public class PlayerController : MonoBehaviour
             case 3:
                 CheckTrashBoxPutDown();
                 break;
+            case 4:
+                CheckCustomerPutDown();
+                break;
             default:
                 break;
 
@@ -125,7 +139,7 @@ public class PlayerController : MonoBehaviour
     {
         if(!IsPlayerPickUpEmpty() && !isChopping && !IsChoppingBoardFull())
         {
-            combination += putDownVegetableSprite.name;
+            combination.Add(putDownVegetableSprite.name);
             ChoppingBoard.transform.GetChild(putDownCount).GetComponent<SpriteRenderer>().sprite = putDownVegetableSprite;
             putDownVegetableSprite = null;
             putDownCount++;
@@ -161,15 +175,53 @@ public class PlayerController : MonoBehaviour
     void CheckTrashBoxPutDown()
     {
         if(isSaladPickedUp)
-        {
-            combination = "";
-            isSaladPickedUp = false;
-            for (int i = 0; i < ChoppingBoard.transform.childCount; i++)
-            {
-                FinalSalad.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = null;
-            }
-            FinalSalad.SetActive(false);
+        {  
+            ClearPlayerSalad();
+            DeductScore(5);
         }
+    }
+
+    /*Function to check if correct salad is given to the customer*/
+    void CheckCustomerPutDown()
+    {
+        if(isSaladPickedUp)
+        {
+            combination.Sort();customerCombination.Sort();      //sorting both the lists for comparison
+            if (combination.Count==customerCombination.Count)
+            {
+                for (int i = 0; i < combination.Count; i++)
+                {
+                    if (combination[i] != customerCombination[i])
+                    {
+                        Debug.Log("Incorrect combination supplied");
+                        break;
+                    }
+                    GiveScore();
+                    Debug.Log("Correct combination supplied");
+                    ClearPlayerSalad();
+                    CustomerGameObject.GetComponent<CustomerController>().DestroyCustomer();
+                }
+            }
+            else
+            {
+                if (gameObject.tag == "Player1") CustomerGameObject.GetComponent<CustomerController>().angryWithPlayer1 = true;
+                if (gameObject.tag == "Player2") CustomerGameObject.GetComponent<CustomerController>().angryWithPlayer2 = true;
+                CustomerGameObject.GetComponent<CustomerController>().timeToDeduct = CustomerGameObject.GetComponent<CustomerController>().timeToDeduct*2;
+                ClearPlayerSalad();
+                Debug.Log("Incorrect combination supplied bc");
+            }
+        }
+    }
+
+    void ClearPlayerSalad()
+    {
+        combination.Clear();
+        isSaladPickedUp = false;
+        for (int i = 0; i < ChoppingBoard.transform.childCount; i++)
+        {
+            FinalSalad.transform.GetChild(i).GetComponent<SpriteRenderer>().sprite = null;
+        }
+        FinalSalad.SetActive(false);
     }
 
     /* Function that returns if plate is full or not - useful to check if vegetable can be placed on the plate */
@@ -207,6 +259,7 @@ public class PlayerController : MonoBehaviour
     }
 
 
+    /*TriggerStay function will contain all the different cases when a player presses pickup or putdown, depending on the trigger in contact, corresponding function is called*/
     private void OnTriggerStay2D(Collider2D other)
     {
         #region Pickup trigger stay logic
@@ -237,6 +290,12 @@ public class PlayerController : MonoBehaviour
         {
             putDownCase = 3;
         }
+        if(other.tag=="Customer")
+        {
+            putDownCase = 4;
+            customerCombination = other.GetComponent<CustomerController>().combination;
+            CustomerGameObject = other.gameObject;
+        }
         #endregion
     }
 
@@ -261,4 +320,43 @@ public class PlayerController : MonoBehaviour
         isChopping = false;
         PlayerChoppingMeter.SetActive(false);
     }
+
+    /*Individual timer for each player */
+    IEnumerator Timer()
+    {
+        while(playerTime>0)
+        {
+            yield return new WaitForSeconds(1f);
+            playerTime--;
+            playerTimeText.text = "Time:" + playerTime.ToString("F0");
+        }
+        /* Code to check which player's time is over and change the corresponding variable to true in Gamecontroller.cs*/
+        if(gameObject.tag=="Player1")
+        {
+            gameController.player1TimeUp = true;
+            gameController.player1Score = playerScore;
+        }
+        if(gameObject.tag=="Player2")
+        {
+            gameController.player2TimeUp = true;
+            gameController.player2Score = playerScore;
+        }
+        gameController.CheckGameOver();
+    }
+
+    /* This is called from within this script, the triggering point is when the player provides correct combination*/
+    void GiveScore()
+    {
+        playerScore += combination.Count * playerGiveScore;
+        playerScoreText.text = "Score:" + playerScore.ToString();
+
+    }
+
+    /*This is always called from the customer script, because the triggering point is when the customer leaves without being served*/
+    public void DeductScore(int score)
+    {
+        playerScore -= score;
+        playerScoreText.text = "Score:" + playerScore.ToString();
+    }
+
 }

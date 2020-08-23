@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-/* Script to dynamically place the vegetables on the shelfs
+﻿/* Script to dynamically place the vegetables on the shelfs
  * Set the vegetable sprites size in the inspector - should be between 2-10
  * Drag the individual vegetable sprites in the inspector */
+
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class PlaceVegetables : MonoBehaviour
 {
